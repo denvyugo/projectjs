@@ -56,4 +56,88 @@ class Products {
 	}
 }
 
+class Basket{
+	constructor(){
+		this.productItems = []; //список продуктов в корзине
+		this.totalItems = 0;	//всего продуктов в корзине
+		this.totalPrice = 0.0;	//стоимость всех продуктов в корзине
+	}
+	/**
+	 * Метод добавления продукта в корзину
+	 * @param {ProductItem} goodItem продукт, добавляемый в корзину
+	 */
+	addItem(goodItem){
+		console.log();
+	}
+	/**
+	 * Метод удаления продукта из корзины
+	 * @param {int} goodID ключевой номер продукта
+	 */
+	deleteItem(goodID){
+		console.log();
+	}
+	/**
+	 * Метод получения количества всех продуктов в корзине
+	 */
+	getQuantity(){
+		console.log();
+	}
+	/**
+	 * Метод получения общей стоимости всех продуктов в корзине
+	 */
+	getTotalPrice(){
+		console.log();
+	}
+	/**
+	 * Метод отображения корзины на странице
+	 */
+	render(){
+		console.log();
+	}
+}
+
+class BasketItem extends ProductItem {
+	constructor(id, title, price, img, quantity){
+		super(id, title, price, img);
+		this.quantity = quantity;
+	}
+	/**
+	 * Метод отображения элемента корзины
+	 */
+	renderItem(){
+		console.log();
+	}
+	/**
+	 * Метод увеличения количества продукта
+	 * @param {int} quantity добавление на указанное количество, по умолчанию на один
+	 */
+	addItem(quantity=1){
+		this.quantity += quantity;
+	}
+	/**
+	 * Метод уменьшения количества продукта на один
+	 */
+	decItem(){
+		console.log();
+	}
+	/**
+	 * Метод получения общего количества товатов
+	 */
+	getQuantity(){
+		return this.quantity;
+	}
+	/**
+	 * Метод получения общей суммы 
+	 */
+	getItemPrice(){
+		console.log();
+	}
+	/**
+	 * Метод получения ключевого номера продукта
+	 */
+	getItemID(){
+		return this.getItemID;
+	}
+}
+
 const products = new Products();
