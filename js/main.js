@@ -50,9 +50,12 @@ class Products {
 	
 	_renderProducts(){
 		const block = document.querySelector(this.container);
+		let totalPrice = 0.0;
 		for (let item of this.productItems){
 			block.insertAdjacentHTML('beforeend', item.renderProduct());
+			totalPrice += item.price;
 		}
+		block.insertAdjacentHTML('beforeend', `<div>Total price of all products: ${totalPrice}.</div>`);
 	}
 }
 
