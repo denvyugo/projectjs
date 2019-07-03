@@ -11,7 +11,7 @@ class ProductItem {
                 <h3>${this.title}</h3>
 				<img src="${this.img}" alt="${this.title}">
                 <p>${this.price}</p>
-                <button class="buy-btn">Купить</button>
+                <button class="buy-btn" data-id="${this.id}">Купить</button>
             </div>`;
 	}
 }
@@ -19,7 +19,7 @@ class ProductItem {
 class Products {
 	constructor(container='.products'){
 		this.container = container;
-		this.productItems = [];
+		this.productItems = new Map();
 		this.init();
 	}
 	
@@ -40,18 +40,20 @@ class Products {
 	
 	_getProductItems(){
 		const data = this._fetchData();
-		this.productItems = data.map(item => this._makeProductItem(item.id, item.title, item.price, item.img));
+		//this.productItems = data.map(item => this._makeProductItem(item.id, item.title, item.price, item.img));
+		data.forEach(item => this._makeProductItem(item));
 	}
 	
-	_makeProductItem(id, title, price, img){
-		let productItem = new ProductItem(id, title, price, img);
-		return productItem;
+	_makeProductItem(item){
+		let productItem = new ProductItem(item.id, item.title, item.price, item.img);
+		//return productItem;
+		this.productItems.set(productItem.id, productItem);
 	}
 	
 	_renderProducts(){
 		const block = document.querySelector(this.container);
 		let totalPrice = 0.0;
-		for (let item of this.productItems){
+		for (let item of this.productItems.values()){
 			block.insertAdjacentHTML('beforeend', item.renderProduct());
 			totalPrice += item.price;
 		}
@@ -60,17 +62,51 @@ class Products {
 }
 
 class Basket{
-	constructor(){
-		this.productItems = []; //список продуктов в корзине
+	constructor(showSwitchBtn){
+		this._setSwitchBtnHandler(showSwitchBtn); //установить обработчик собития переключателя
+		this.showStatus = false;
+		this.buyingItems = new Map(); //список продуктов в корзине
 		this.totalItems = 0;	//всего продуктов в корзине
 		this.totalPrice = 0.0;	//стоимость всех продуктов в корзине
+	}
+	/**
+	 * Метод подключения кнопки показа/скрытия корзины
+	 * устанавливает обработчик события нажатия кнопки
+	 * @param {str} showSwitchBtn идентификатор копки
+	 */
+	_setSwitchBtnHandler(showSwitchBtn){
+		document.querySelector(`#${showSwitchBtn}`)
+			.addEventListener('click', event => this._switchBtnHandler(event));
+	}
+	/**
+	 * Метод обработки показа/скрытия корзины
+	 */
+	_switchBtnHandler(event){
+		this.showStatus = !this.showStatus;
+		if (this.showStatus) {
+			console.log(`Show status is switch on to ${this.showStatus}`);
+		} else {
+			console.log(`Show status is switch off to ${this.showStatus}`);
+		}
 	}
 	/**
 	 * Метод добавления продукта в корзину
 	 * @param {ProductItem} goodItem продукт, добавляемый в корзину
 	 */
 	addItem(goodItem){
-		console.log();
+		let buyItem = this.buyingItems(goodItem.id);
+		if (buyItem === undefined) {
+			buyItem = new BasketItem(
+				id = goodItem.id,
+				title = goodItem.title,
+				price = goodItem.price,
+				quantity = 1
+			);
+			this.buyingItems.set(buyItem.id, buyItem);
+		} else {
+			buyItem.quantity += 1;
+		}
+		console.log(buyItem);
 	}
 	/**
 	 * Метод удаления продукта из корзины
@@ -144,3 +180,4 @@ class BasketItem extends ProductItem {
 }
 
 const products = new Products();
+const basket = new Basket('basket-btn');
