@@ -26,6 +26,7 @@ class Products {
 	init(){
 		this._getProductItems();
 		this._renderProducts();
+		this._setProductsHandler();
 	}
 	
 	_fetchData(){
@@ -40,14 +41,25 @@ class Products {
 	
 	_getProductItems(){
 		const data = this._fetchData();
-		//this.productItems = data.map(item => this._makeProductItem(item.id, item.title, item.price, item.img));
 		data.forEach(item => this._makeProductItem(item));
 	}
 	
 	_makeProductItem(item){
 		let productItem = new ProductItem(item.id, item.title, item.price, item.img);
-		//return productItem;
 		this.productItems.set(productItem.id, productItem);
+	}
+	
+	_setProductsHandler(){
+		document.querySelector(this.container)
+		.addEventListener('click', event => this._buyProductHandler(event));
+	}
+	
+	_buyProductHandler(event){
+		const el = event.target;
+		if (el.tagName == 'BUTTON') {
+			basket.addItem(this.productItems.get(+el.dataset.id));
+			console.log(this.productItems.get(+el.dataset.id));	
+		}
 	}
 	
 	_renderProducts(){
@@ -63,7 +75,7 @@ class Products {
 
 class Basket{
 	constructor(showSwitchBtn){
-		this._setSwitchBtnHandler(showSwitchBtn); //установить обработчик собития переключателя
+		this._setSwitchBtnHandler(showSwitchBtn); //установить обработчик события переключателя
 		this.showStatus = false;
 		this.buyingItems = new Map(); //список продуктов в корзине
 		this.totalItems = 0;	//всего продуктов в корзине
@@ -84,9 +96,9 @@ class Basket{
 	_switchBtnHandler(event){
 		this.showStatus = !this.showStatus;
 		if (this.showStatus) {
-			console.log(`Show status is switch on to ${this.showStatus}`);
+			console.log(`Show status switch on to ${this.showStatus}, total: ${this.totalItems}`);
 		} else {
-			console.log(`Show status is switch off to ${this.showStatus}`);
+			console.log(`Show status switch off to ${this.showStatus}, total: ${this.totalItems}`);
 		}
 	}
 	/**
@@ -94,19 +106,20 @@ class Basket{
 	 * @param {ProductItem} goodItem продукт, добавляемый в корзину
 	 */
 	addItem(goodItem){
-		let buyItem = this.buyingItems(goodItem.id);
+		let buyItem = this.buyingItems.get(goodItem.id);
 		if (buyItem === undefined) {
 			buyItem = new BasketItem(
-				id = goodItem.id,
-				title = goodItem.title,
-				price = goodItem.price,
-				quantity = 1
+				goodItem.id,
+				goodItem.title,
+				goodItem.price,
+				goodItem.img,
+				1
 			);
 			this.buyingItems.set(buyItem.id, buyItem);
 		} else {
-			buyItem.quantity += 1;
+			buyItem.addItem();
 		}
-		console.log(buyItem);
+		this.totalItems += 1;
 	}
 	/**
 	 * Метод удаления продукта из корзины
