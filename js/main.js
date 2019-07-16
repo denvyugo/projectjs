@@ -1,3 +1,5 @@
+"use strict";
+
 class ProductItem {
 	constructor(id, title, price, img){
 		this.id = id;
@@ -6,7 +8,7 @@ class ProductItem {
 		this.img = img;
 	}
 	
-	renderProduct(){
+	renderItem(){
 		 return `<div class="product-item">
                 <h3>${this.title}</h3>
 				<img src="${this.img}" alt="${this.title}">
@@ -58,7 +60,6 @@ class Products {
 		const el = event.target;
 		if (el.tagName == 'BUTTON') {
 			basket.addItem(this.productItems.get(+el.dataset.id));
-			console.log(this.productItems.get(+el.dataset.id));	
 		}
 	}
 	
@@ -66,7 +67,7 @@ class Products {
 		const block = document.querySelector(this.container);
 		let totalPrice = 0.0;
 		for (let item of this.productItems.values()){
-			block.insertAdjacentHTML('beforeend', item.renderProduct());
+			block.insertAdjacentHTML('beforeend', item.renderItem());
 			totalPrice += item.price;
 		}
 		block.insertAdjacentHTML('beforeend', `<div>Total price of all products: ${totalPrice}.</div>`);
@@ -97,8 +98,10 @@ class Basket{
 		this.showStatus = !this.showStatus;
 		if (this.showStatus) {
 			console.log(`Show status switch on to ${this.showStatus}, total: ${this.totalItems}`);
+			this.render();
 		} else {
 			console.log(`Show status switch off to ${this.showStatus}, total: ${this.totalItems}`);
+			this.hide();
 		}
 	}
 	/**
@@ -120,31 +123,59 @@ class Basket{
 			buyItem.addItem();
 		}
 		this.totalItems += 1;
+		this.totalPrice += buyItem.price;
 	}
 	/**
 	 * Метод удаления продукта из корзины
 	 * @param {int} goodID ключевой номер продукта
 	 */
 	deleteItem(goodID){
-		console.log();
+		let buyItem = this.buyingItems.get(goodID);
+		if (buyItem) {
+			price = buyItem.price;
+			if (buyItem.quantity > 1) {
+				buyItem.decItem();
+			} else {
+				this.buyingItems.delete(goodID);
+			}
+			this.totalItems--;
+			this.totalPrice -= price;
+		}
 	}
 	/**
 	 * Метод получения количества всех продуктов в корзине
 	 */
-	getQuantity(){
-		console.log();
+	getQuantity() {
+		return this.totalItems;
 	}
 	/**
 	 * Метод получения общей стоимости всех продуктов в корзине
 	 */
-	getTotalPrice(){
-		console.log();
+	getTotalPrice() {
+		return this.totalPrice;
 	}
 	/**
 	 * Метод отображения корзины на странице
 	 */
-	render(){
-		console.log();
+	render() {
+		let block = document.createElement('div');
+		block.setAttribute('class', 'basket');
+		document.querySelector('.container').appendChild(block);
+		for (let item of this.buyingItems.values()){
+			block.insertAdjacentHTML('beforeend', item.renderItem());
+		}
+		block.insertAdjacentHTML('beforeend', 
+			`<p>Total ${this.getQuantity()} goods</p>
+			<p>Total price is $${this.getTotalPrice()}</p>`)
+	}
+	
+	/**
+	 * Метод скрытия конзины на странице
+	 *
+	 */
+	hide() {
+		let block = document.querySelector('.basket');
+		block.remove();
 	}
 }
 
@@ -156,8 +187,13 @@ class BasketItem extends ProductItem {
 	/**
 	 * Метод отображения элемента корзины
 	 */
-	renderItem(){
-		console.log();
+	renderItem() {
+		return `<div class="basket-item">
+			<h3>${this.title}</h3>
+			<p>${this.getItemPrice()}</p>
+			<p>quantity: ${this.getQuantity()} 
+			<button class="btn-delete" data-id="${this.id}">&times;</button></p>
+			</div>`;
 	}
 	/**
 	 * Метод увеличения количества продукта
@@ -170,7 +206,12 @@ class BasketItem extends ProductItem {
 	 * Метод уменьшения количества продукта на один
 	 */
 	decItem(){
-		console.log();
+		if (this.quantity === 1) {
+			//удалить элемент
+		} else {
+			//уменьшить количество
+			this.quantity--;
+		}
 	}
 	/**
 	 * Метод получения общего количества товатов
@@ -182,13 +223,7 @@ class BasketItem extends ProductItem {
 	 * Метод получения общей суммы 
 	 */
 	getItemPrice(){
-		console.log();
-	}
-	/**
-	 * Метод получения ключевого номера продукта
-	 */
-	getItemID(){
-		return this.getItemID;
+		return this.price * this.quantity;
 	}
 }
 

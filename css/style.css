@@ -51,7 +51,7 @@ main {
 }
 
 .product-item img {
-	width: 100%;
+	width: 240px;
 	height: 120px;
 	margin-bottom: 10px;
 }
@@ -64,4 +64,33 @@ main {
 	height: 26px;
 }
 
+.basket {
+	width: 20%;
+	background-color: whitesmoke;
+	z-index: 100;
+	top: 40px;
+	left: 70%;
+	position: fixed;
+}
 
+.basket-item {
+	z-index: 101;
+}
+
+.basket-item img {
+	width: 30%;
+	height: 30px;
+	/*z-index: 101;*/
+}
+
+.basket-item h3 {
+	height: 30px;
+}
+
+.basket-item p {
+	margin-bottom: 5px;
+}
+
+.btn-delete {
+	height: 20px;
+}
